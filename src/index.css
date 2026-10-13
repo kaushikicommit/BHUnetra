@@ -1,0 +1,95 @@
+
+@import "tailwindcss";
+
+/* BhuNetra Midnight Navy + Amber */
+@theme {
+  --color-slate-950: #071426;
+  --color-slate-900: #0D1C2B;
+  --color-slate-800: #142A40;
+  --color-slate-700: #243746;
+  --color-slate-500: #879CB2;
+  --color-slate-400: #A9BCD0;
+  --color-slate-300: #C5D2DF;
+  --color-slate-200: #DCE5ED;
+  --color-slate-100: #EAF0F6;
+  --color-emerald-300: #FFD071;
+  --color-emerald-400: #F2B84B;
+  --color-emerald-500: #DDA13B;
+  --color-emerald-600: #B98127;
+}
+
+:root {
+  color-scheme: dark;
+  --bh-bg: #071426;
+  --bh-surface: #0D1C2B;
+  --bh-card: #102338;
+  --bh-border: #26394D;
+  --bh-amber: #F2B84B;
+  --bh-text: #EAF0F6;
+  --bh-muted: #A9BCD0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+  background-color: var(--bh-bg);
+  color: var(--bh-text);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+}
+
+/* Convert existing emerald accents to amber */
+[class~="text-emerald-300"],
+[class~="text-emerald-400"],
+[class~="text-emerald-500"],
+[class~="text-emerald-600"] {
+  color: var(--bh-amber) !important;
+}
+
+[class~="bg-emerald-300"],
+[class~="bg-emerald-400"],
+[class~="bg-emerald-500"] {
+  background-color: var(--bh-amber) !important;
+}
+
+[class~="border-emerald-400"],
+[class~="border-emerald-500"] {
+  border-color: var(--bh-amber) !important;
+}
+
+/* Recolour common translucent emerald surfaces */
+[class*="bg-emerald-400/"],
+[class*="bg-emerald-500/"] {
+  background-color: rgb(242 184 75 / 10%) !important;
+}
+
+/* Replace common green gradients */
+[class*="from-emerald-400"] {
+  --tw-gradient-from: #F2B84B var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(242 184 75 / 0%) var(--tw-gradient-to-position) !important;
+}
+
+[class*="via-emerald-400"] {
+  --tw-gradient-via: #DDA13B var(--tw-gradient-via-position) !important;
+}
+
+[class*="to-emerald-400"] {
+  --tw-gradient-to: #FFD071 var(--tw-gradient-to-position) !important;
+}
+
+/* Consistent form controls */
+input,
+select,
+textarea {
+  color: var(--bh-text);
+  background-color: var(--bh-surface);
+  border-color: var(--bh-border);
+}

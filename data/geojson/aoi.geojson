@@ -3,15 +3,15 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {"name": "BhuNetra AOI Sohna"},
+      "properties": {"name": "BhuNetra AOI Asola-Bhatti"},
       "geometry": {
         "type": "Polygon",
         "coordinates": [[
-          [77.04, 28.22],
-          [77.14, 28.22],
-          [77.14, 28.31],
-          [77.04, 28.31],
-          [77.04, 28.22]
+          [77.17, 28.40],
+          [77.27, 28.40],
+          [77.27, 28.49],
+          [77.17, 28.49],
+          [77.17, 28.40]
         ]]
       }
     }

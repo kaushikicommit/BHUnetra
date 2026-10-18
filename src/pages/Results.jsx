@@ -51,14 +51,32 @@ function Results() {
     isDemo: true,
   }
 
+  const result = selected.result || null
+  const hasResult = Boolean(result)
+
   const demoResults = {
-    region: selected.region || 'Jaipur Study Area',
-    firstDate: formatDate(selected.startDate || '2024-06-12'),
-    secondDate: formatDate(selected.endDate || '2025-06-12'),
-    changedArea: '42.0 ha',
-    transitions: '4',
-    protectedAlerts: '2',
+    region: result?.region || selected.region || 'Jaipur Study Area',
+    firstDate: formatDate(
+      result?.period_used?.date_from || selected.startDate || '2024-06-12'
+    ),
+    secondDate: formatDate(
+      result?.period_used?.date_to || selected.endDate || '2025-06-12'
+    ),
+    changedArea: hasResult
+      ? `${Number(result.total_changed_ha).toFixed(1)} ha`
+      : '42.0 ha',
+    transitions: hasResult ? String(result.transition_count) : '4',
+    protectedAlerts: hasResult ? String(result.protected_alert_count) : '2',
   }
+
+  const chartData = hasResult ? result.transitions : transitionData
+
+  const alertRows = hasResult
+    ? result.alerts
+    : [
+        { title: 'Sample overlap A', subtitle: 'Illustrative spatial flag' },
+        { title: 'Sample overlap B', subtitle: 'Illustrative spatial flag' },
+      ]
 
   return (
     <main className="min-h-screen bg-[#071426] text-[#EAF0F6]">
@@ -87,12 +105,10 @@ function Results() {
           <Clock3 className="mt-0.5 h-5 w-5 shrink-0 text-[#F2B84B]" />
           <div>
             <p className="text-sm font-semibold text-[#F2B84B]">
-              Demonstration results
+              {hasResult ? 'Results from the BhuNetra backend' : 'Demonstration results'}
             </p>
             <p className="mt-1 text-xs leading-5 text-[#A9BCD0]">
-              The selected region and dates below come from your Analysis
-              configuration. The statistics, chart, visual comparison and
-              alert examples are illustrative, not actual satellite analysis.
+              {hasResult ? (result.period_used?.fallback ? 'No stored changes matched the dates you chose, so the latest available period is shown. Imagery panels are placeholders.' : 'Statistics, chart and alerts come from the stored change events. Imagery panels are placeholders.') : 'The selected region and dates below come from your Analysis configuration. The statistics, chart, visual comparison and alert examples are illustrative, not actual satellite analysis.'}
             </p>
           </div>
         </div>
@@ -144,27 +160,27 @@ function Results() {
 
         <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
-            label="Illustrative changed area"
+            label={hasResult ? 'Changed area' : 'Illustrative changed area'}
             value={demoResults.changedArea}
             detail="Across example transitions"
             icon={<TrendingUp className="h-5 w-5" />}
           />
           <MetricCard
-            label="Sample transitions"
+            label={hasResult ? 'Transition types' : 'Sample transitions'}
             value={demoResults.transitions}
             detail="Example transition types"
             icon={<Layers3 className="h-5 w-5" />}
           />
           <MetricCard
-            label="Sample zone alerts"
+            label={hasResult ? 'Protected-zone alerts' : 'Sample zone alerts'}
             value={demoResults.protectedAlerts}
             detail="Illustrative overlap flags"
             icon={<ShieldAlert className="h-5 w-5" />}
           />
           <MetricCard
             label="Workflow status"
-            value="Demo"
-            detail="Backend not connected"
+            value={hasResult ? 'Live' : 'Demo'}
+            detail={hasResult ? 'Read from backend' : 'Backend not connected'}
             icon={<Clock3 className="h-5 w-5" />}
           />
         </section>
@@ -201,7 +217,7 @@ function Results() {
             <div className="mt-7 h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={transitionData}
+                  data={chartData}
                   layout="vertical"
                   margin={{ top: 4, right: 12, left: 8, bottom: 4 }}
                 >
@@ -219,7 +235,7 @@ function Results() {
                   <YAxis
                     type="category"
                     dataKey="name"
-                    width={145}
+                    width={165}
                     tick={{ fill: '#A9BCD0', fontSize: 10 }}
                     axisLine={false}
                     tickLine={false}
@@ -268,14 +284,19 @@ function Results() {
               </div>
 
               <div className="mt-5 space-y-3">
-                <AlertRow
-                  title="Sample overlap A"
-                  subtitle="Illustrative spatial flag"
-                />
-                <AlertRow
-                  title="Sample overlap B"
-                  subtitle="Illustrative spatial flag"
-                />
+                {alertRows.length === 0 ? (
+                  <p className="text-xs text-[#8296AA]">
+                    No detected changes overlap a protected zone.
+                  </p>
+                ) : (
+                  alertRows.map((alert, index) => (
+                    <AlertRow
+                      key={index}
+                      title={alert.title}
+                      subtitle={alert.subtitle}
+                    />
+                  ))
+                )}
               </div>
             </div>
 

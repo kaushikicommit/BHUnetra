@@ -1,6 +1,7 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import api, { getApiError } from '../services/api'
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,7 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 
-const regions = [
+const defaultRegions = [
   'Jaipur Study Area',
   'Sambhar Lake Region',
   'Ranthambore Study Area',
@@ -25,14 +26,28 @@ const regions = [
 function Analysis() {
   const navigate = useNavigate()
 
-  const [region, setRegion] = useState(regions[0])
+  const [regions, setRegions] = useState(defaultRegions)
+  const [region, setRegion] = useState(defaultRegions[0])
+
+  useEffect(() => {
+    api
+      .get('/regions')
+      .then(({ data }) => {
+        const items = Array.isArray(data)
+          ? data
+          : (data.features || []).map((feature) => feature.properties)
+        const names = items.map((item) => item && item.name).filter(Boolean)
+        if (names.length) setRegions(names)
+      })
+      .catch(() => {})
+  }, [])
   const [startDate, setStartDate] = useState('2024-06-12')
   const [endDate, setEndDate] = useState('2025-06-12')
   const [message, setMessage] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
     setMessage('')
     setSubmitted(false)
@@ -54,12 +69,21 @@ function Analysis() {
 
     setIsSubmitting(true)
 
-    // Temporary frontend demonstration.
-    // Actual analysis will be connected to FastAPI later.
-    window.setTimeout(() => {
+    try {
+      const { data } = await api.post('/analysis', {
+        region,
+        start_date: startDate,
+        end_date: endDate,
+      })
+
+      navigate('/results', {
+        state: { region, startDate, endDate, result: data, isDemo: false },
+      })
+    } catch (error) {
+      setMessage(getApiError(error))
+    } finally {
       setIsSubmitting(false)
-      setSubmitted(true)
-    }, 700)
+    }
   }
 
   function resetConfiguration() {
@@ -283,11 +307,11 @@ function Analysis() {
                   {isSubmitting ? (
                     <>
                       <LoaderCircle className="h-4 w-4 animate-spin" />
-                      Validating configuration...
+                      Running analysis...
                     </>
                   ) : (
                     <>
-                      Prepare Analysis
+                      Run Analysis
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </>
                   )}
@@ -295,8 +319,7 @@ function Analysis() {
 
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-[10px] leading-5 text-[#8296AA]">
-                    Frontend demonstration only. Satellite processing will
-                    start after backend integration.
+                    Results are read from the BhuNetra backend. Live satellite processing is not part of this version.
                   </p>
 
                   <button

@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"name": "BhuNetra AOI Sohna"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.04, 28.22],
+          [77.14, 28.22],
+          [77.14, 28.31],
+          [77.04, 28.31],
+          [77.04, 28.22]
+        ]]
+      }
+    }
+  ]
+}
